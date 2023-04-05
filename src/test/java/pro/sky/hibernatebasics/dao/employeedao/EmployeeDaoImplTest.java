@@ -4,6 +4,7 @@ import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.junit.jupiter.api.Test;
 import pro.sky.hibernatebasics.exceptions.CustomException;
+import pro.sky.hibernatebasics.model.City;
 import pro.sky.hibernatebasics.model.Employee;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -14,29 +15,30 @@ class EmployeeDaoImplTest {
     private final Long ID = 1L;
     private final Long NEW_USER_ID = 1000L;
     private final Long WRONG_ID = 100000000L;
-    private final Long CITY_ID = 1L;
-    private final Employee user = new Employee(ID, "user", "user", "M", 20, CITY_ID);
-    private final Employee newUser = new Employee(NEW_USER_ID, "newUser", "newUser", "M", 20, CITY_ID);
+    private final City MOSCOW = new City(1L, "Moscow");
+    private final City SAMARA = new City(2L, "Samara");
+    private final Employee user = new Employee(ID, "user", "user", "M", 20, MOSCOW);
+    private final Employee newUser = new Employee(NEW_USER_ID, "newUser", "newUser", "M", 20, SAMARA);
     private static final EmployeeDaoImpl out = new EmployeeDaoImpl();
 
     @Test
-    void ShouldFindEmployeeById() {
+    void shouldFindEmployeeById() {
         assertEquals(out.getEmployeeByID(ID), user);
 
     }
 
     @Test
-    void ShouldThrowExceptionWhenNotFoundEmployeeById() {
+    void shouldThrowExceptionWhenNotFoundEmployeeById() {
         assertThrows(CustomException.class, () -> out.getEmployeeByID(WRONG_ID));
     }
 
     @Test
-    void ShouldUpdateEmployeeById() {
+    void shouldUpdateEmployeeById() {
         assertEquals(out.updateEmployee(user, ID), user);
     }
 
     @Test
-    void ShouldThrowExceptionWhenNotFoundEmployeeByIdWhenTryToUpdate() {
+    void shouldThrowExceptionWhenNotFoundEmployeeByIdWhenTryToUpdate() {
         assertThrows(CustomException.class, () -> out.updateEmployee(user, WRONG_ID));
     }
 
@@ -53,7 +55,7 @@ class EmployeeDaoImplTest {
     }
 
     @Test
-    void ShouldThrowExceptionWhenNotFoundEmployeeByIdWhenTryToDelete() {
+    void shouldThrowExceptionWhenNotFoundEmployeeByIdWhenTryToDelete() {
         assertThrows(CustomException.class, () -> out.deleteEmployeeById(WRONG_ID));
     }
 
@@ -61,6 +63,16 @@ class EmployeeDaoImplTest {
     void createEmployee() {
         assertTrue(out.createEmployee(newUser));
         deleteEmployee(newUser);
+    }
+
+    @Test
+    void shouldGetEmployeesByCity() {
+        int size = out.readAll()
+                .stream()
+                .filter(o -> o.getCity().equals(MOSCOW))
+                .toList()
+                .size();
+        assertEquals(out.getEmployeesByCity(MOSCOW).size(), size);
     }
 
     private Employee findEmployee(Employee employee) {

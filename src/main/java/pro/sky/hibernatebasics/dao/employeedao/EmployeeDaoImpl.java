@@ -3,9 +3,11 @@ package pro.sky.hibernatebasics.dao.employeedao;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import pro.sky.hibernatebasics.exceptions.CustomException;
+import pro.sky.hibernatebasics.model.City;
 import pro.sky.hibernatebasics.model.Employee;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static pro.sky.hibernatebasics.connection.HibernateConnectionFactory.getSessionFactory;
 
@@ -81,5 +83,17 @@ public class EmployeeDaoImpl implements EmployeeDao {
             session.close();
             return true;
         }
+    }
+
+    @Override
+    public List<Employee> getEmployeesByCity(City city) {
+        Session session = getSessionFactory().openSession();
+            List<Employee> employees = session.createQuery("select employee from Employee employee", Employee.class)
+                    .getResultList()
+                    .stream()
+                    .filter(o -> o.getCity().equals(city))
+                    .collect(Collectors.toList());
+            session.close();
+            return employees;
     }
 }

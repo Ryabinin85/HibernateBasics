@@ -1,5 +1,6 @@
 package pro.sky.hibernatebasics.dao.employeedao;
 
+import pro.sky.hibernatebasics.model.City;
 import pro.sky.hibernatebasics.model.Employee;
 
 import java.util.List;
@@ -14,4 +15,6 @@ public interface EmployeeDao {
     Employee updateEmployee(Employee employee, Long id);
 
     boolean deleteEmployeeById(Long id);
+
+    List<Employee> getEmployeesByCity(City city);
 }

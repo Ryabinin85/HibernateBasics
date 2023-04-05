@@ -33,8 +33,9 @@ public class Employee {
     @Column(name = "age")
     private int age;
 
-    @Column(name = "city_id")
-    private Long cityId;
+    @ManyToOne()
+    @JoinColumn(name = "city_id")
+    private City city;
 
 
     @Override
