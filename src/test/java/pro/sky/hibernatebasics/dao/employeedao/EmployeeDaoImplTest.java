@@ -76,23 +76,25 @@ class EmployeeDaoImplTest {
     }
 
     private Employee findEmployee(Employee employee) {
-        Session session = getSessionFactory().openSession();
-        return session.createQuery("select employee from Employee employee", Employee.class)
-                .getResultList()
-                .stream()
-                .filter(o -> o.getFirstName().equals(employee.getFirstName()))
-                .findFirst().orElse(null);
+        try (Session session = getSessionFactory().openSession()) {
+            return session.createQuery("select employee from Employee employee", Employee.class)
+                    .getResultList()
+                    .stream()
+                    .filter(o -> o.getFirstName().equals(employee.getFirstName()))
+                    .findFirst().orElse(null);
+        }
     }
 
     private void deleteEmployee(Employee employee) {
-        Session session = getSessionFactory().openSession();
-        if (employee == null) {
-            throw new CustomException("Сотрудник не найден в БД");
-        } else {
-            Transaction transaction = session.beginTransaction();
-            session.remove(employee);
-            transaction.commit();
-            session.close();
+        try (Session session = getSessionFactory().openSession()) {
+            if (employee == null) {
+                throw new CustomException("Сотрудник не найден в БД");
+            } else {
+                Transaction transaction = session.beginTransaction();
+                session.remove(employee);
+                transaction.commit();
+                session.close();
+            }
         }
     }
 }

@@ -36,13 +36,13 @@ class CityDaoImplTest {
 
     }
 
-
     private Employee findEmployee(Employee employee) {
-        Session session = getSessionFactory().openSession();
-        return session.createQuery("select employee from Employee employee", Employee.class)
-                .getResultList()
-                .stream()
-                .filter(o -> o.getFirstName().equals(employee.getFirstName()))
-                .findFirst().orElse(null);
+        try (Session session = getSessionFactory().openSession()) {
+            return session.createQuery("select employee from Employee employee", Employee.class)
+                    .getResultList()
+                    .stream()
+                    .filter(o -> o.getFirstName().equals(employee.getFirstName()))
+                    .findFirst().orElse(null);
+        }
     }
 }

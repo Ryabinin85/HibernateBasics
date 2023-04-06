@@ -11,33 +11,32 @@ public class CityDaoImpl implements CityDao {
 
     @Override
     public City getCityById(Long id) {
-        Session session = getSessionFactory().openSession();
-        City city = session.get(City.class, id);
-        if (city == null) {
-            session.close();
-            throw new CustomException("Город не найден в БД");
-        } else {
-            session.close();
-            return city;
+        try (Session session = getSessionFactory().openSession()) {
+            City city = session.get(City.class, id);
+
+            if (city == null) {
+                throw new CustomException("Город не найден в БД");
+            } else {
+                return city;
+            }
         }
     }
 
     @Override
     public City getCityByEmployeeId(Long id) {
-        Session session = getSessionFactory().openSession();
-        Employee employee = session.get(Employee.class, id);
-        if (employee == null) {
-            session.close();
-            throw new CustomException("Сотрудник не найден в БД");
-        } else {
-            City city = session.createQuery("select city from City city", City.class)
-                    .getResultList()
-                    .stream()
-                    .filter(o -> o.equals(employee.getCity()))
-                    .findFirst()
-                    .orElseThrow(() -> new CustomException("Город не найден в БД"));
-            session.close();
-            return city;
+        try (Session session = getSessionFactory().openSession()) {
+            Employee employee = session.get(Employee.class, id);
+
+            if (employee == null) {
+                throw new CustomException("Сотрудник не найден в БД");
+            } else {
+                return session.createQuery("select city from City city", City.class)
+                        .getResultList()
+                        .stream()
+                        .filter(o -> o.equals(employee.getCity()))
+                        .findFirst()
+                        .orElseThrow(() -> new CustomException("Город не найден в БД"));
+            }
         }
     }
 }
